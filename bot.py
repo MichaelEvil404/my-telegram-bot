@@ -7,6 +7,31 @@ from pyrogram import Client, filters, types
 from pyrogram.errors import UserNotParticipant
 from flask import Flask
 from threading import Thread
+import telebot
+
+# --- ၁။ Web Server ဆောက်တဲ့အပိုင်း (Keep Alive) ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive and running!"
+
+def run():
+    # Koyeb သို့မဟုတ် Render အတွက် Port 8080 ကို အသုံးပြုပါ
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+    
+# --- ၃။ Bot ကို စတင်နှိုးစက်ပေးတဲ့အပိုင်း ---
+if __name__ == "__main__":
+    # Web Server ကို နောက်ကွယ်မှာ အရင် Run ခိုင်းပါမယ်
+    keep_alive()
+    print("Web Server Started")
+    
+    # Bot ကို အမြဲတမ်း Polling လုပ်နေအောင် ထားပါမယ်
+    bot.infinity_polling()
 
 # Koyeb Health Check အောင်မြင်ရန်အတွက် Port တစ်ခု ဖွင့်ပေးခြင်း
 app_web = Flask('')
@@ -223,4 +248,5 @@ async def search_cmd(client, message):
 
 if __name__ == "__main__":
     app.run()
+
 
