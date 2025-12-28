@@ -1,30 +1,17 @@
-import sqlite3, logging, random
+import sqlite3
+import logging
+import random
+import os
 from datetime import datetime
 from pyrogram import Client, filters, types
 from pyrogram.errors import UserNotParticipant
-from flask import Flask
-from threading import Thread
-import telebot
-import os
-
-app = Client(
-    "ultra_movie_bot",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN
-    # proxy အပိုင်းကို လုံးဝဖြုတ်ပစ်ပါ
-)
-
-# --- သင့်ရဲ့ Bot Logic များ ဤနေရာတွင် ရေးပါ ---
-
-if __name__ == "__main__":
-    keep_alive() # Web Server ကို စတင်စေခြင်း
-    bot.infinity_polling()
 
 # --- ၁။ Configuration ---
-API_ID = 27855043
-API_HASH = "e6dea5d571e0d9bab219026211ef54b6"
-BOT_TOKEN = "8443357375:AAF5AvWe_RHVjU-K4S7K6mGklPHLHoGrpBU"
+# Koyeb မှာ Environment Variables အဖြစ် ထည့်သွင်းရပါမယ်
+API_ID = int(os.environ.get("API_ID", "27855043"))
+API_HASH = os.environ.get("API_HASH", "e6dea5d571e0d9bab219026211ef54b6")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8443357375:AAF5AvWe_RHVjU-K4S7K6mGklPHLHoGrpBU")
+
 OWNER_ID = 7481946766
 CHANNEL_ID = -1002428771168
 CHANNEL_URL = "https://t.me/DongHuaFan"
@@ -49,7 +36,7 @@ async def is_subscribed(client, message):
         return True
     except UserNotParticipant:
         kb = types.InlineKeyboardMarkup([[types.InlineKeyboardButton("Join Channel", url=CHANNEL_URL)]])
-        await message.reply_text("⚠️ ရှေ့ဆက်ရန် Channel အရင် Join ပြီ? /start ပြန်နှိပ်ပေ?ပ? ", reply_markup=kb)
+        await message.reply_text("⚠️ ရှေ့ဆက်ရန် Channel အရင် Join ပေးပါ။ ပြီးရင် /start ကို ပြန်နှိပ်ပါ။", reply_markup=kb)
         return False
     except: return True
 
@@ -130,21 +117,17 @@ async def cb_handler(client, cb):
 # --- ၅။ Admin & Search Commands ---
 @app.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
-    # ၁။ User ID ကို Database ထဲ အရင်ဆုံး သိမ်းဆည်းခြင်း
     user_id = message.from_user.id
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     conn = sqlite3.connect("movies.db")
-    # အကယ်၍ User ID ရှိပြီးသားဆိုရင် နောက်ဆုံးတွေ့ရတဲ့အချိန် (last_seen) ကိုပဲ Update လုပ်မယ်
     conn.execute("INSERT OR REPLACE INTO users (user_id, last_seen) VALUES (?, ?)", (user_id, now))
     conn.commit()
     conn.close()
 
-    # ၂။ Channel Join မ Join စစ်ဆေးခြင်း
     if not await is_subscribed(client, message): 
         return
         
-    # ၃။ ကြိုဆိုစာနှင့် Menu ပြသခြင်း
     await message.reply_text("👋 **မင်္ဂလာပါ Donghua Fan တို့ရေ...**\n\n"
     "ကျွန်တော်ကတော့ သင်ကြည့်ချင်တဲ့ Donghua ဇာတ်ကားတွေကို အမြန်ဆုံး ရှာဖွေပေးမယ့် **DonghuaFan Official Bot** ပါ။ 🐉\n\n"
     "🔹 **အသုံးပြုနည်း-**\n"
@@ -181,7 +164,7 @@ async def broadcast(client, message):
             await message.reply_to_message.copy(u[0])
             count += 1
         except Exception:
-            pass # Bot ကို Block ထားတဲ့ user ဆိုရင် ကျော်သွားမယ်
+            pass
             
     await msg.edit_text(f"✅ လူပေါင်း {count} ဦးထံ အောင်မြင်စွာ ပို့ဆောင်ပြီးပါပြီ။")
 
@@ -217,5 +200,5 @@ async def search_cmd(client, message):
             await message.reply_text(t, reply_markup=kb)
     else: await message.reply_text("❌ မတွေ့ပါ။ နာမည်မှန်အောင် ပြန်ရိုက်ကြည့်ပါ။")
 
-app.run()
-
+if __name__ == "__main__":
+    app.run()
