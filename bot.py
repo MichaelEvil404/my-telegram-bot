@@ -7,21 +7,13 @@ from threading import Thread
 import telebot
 import os
 
-
-app = Flask('')
-
-@app.route('/')
-def home():
-    return "I am alive!"
-
-def run():
-    app.run(host='0.0.0.0', port=8080)
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-
-bot = telebot.TeleBot("YOUR_BOT_TOKEN_HERE")
+app = Client(
+    "ultra_movie_bot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
+    # proxy အပိုင်းကို လုံးဝဖြုတ်ပစ်ပါ
+)
 
 # --- သင့်ရဲ့ Bot Logic များ ဤနေရာတွင် ရေးပါ ---
 
@@ -226,3 +218,4 @@ async def search_cmd(client, message):
     else: await message.reply_text("❌ မတွေ့ပါ။ နာမည်မှန်အောင် ပြန်ရိုက်ကြည့်ပါ။")
 
 app.run()
+
