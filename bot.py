@@ -5,6 +5,27 @@ import os
 from datetime import datetime
 from pyrogram import Client, filters, types
 from pyrogram.errors import UserNotParticipant
+from flask import Flask
+from threading import Thread
+
+# Koyeb Health Check အောင်မြင်ရန်အတွက် Port တစ်ခု ဖွင့်ပေးခြင်း
+app_web = Flask('')
+
+@app_web.route('/')
+def home():
+    return "Bot is Alive!"
+
+def run():
+    # Koyeb က ပေးတဲ့ Port ကို သုံးမယ်၊ မရှိရင် 8000 ကို သုံးမယ်
+    port = int(os.environ.get("PORT", 8000))
+    app_web.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# သင့်ရဲ့ Bot code တွေ မစခင် ဒါကို အရင်ခေါ်ထားပါ
+keep_alive()
 
 # --- ၁။ Configuration ---
 # Koyeb မှာ Environment Variables အဖြစ် ထည့်သွင်းရပါမယ်
@@ -202,3 +223,4 @@ async def search_cmd(client, message):
 
 if __name__ == "__main__":
     app.run()
+
