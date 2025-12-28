@@ -23,6 +23,32 @@ def run():
 def keep_alive():
     t = Thread(target=run)
     t.start()
+
+import telebot
+from flask import Flask
+from threading import Thread
+import os
+
+# --- ၁။ Web Server ဆောက်တဲ့အပိုင်း (Keep Alive) ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive and running!"
+
+def run():
+    # Koyeb သို့မဟုတ် Render အတွက် Port 8080 ကို အသုံးပြုပါ
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# --- ၂။ Bot Setup အပိုင်း ---
+# သင့်ရဲ့ Bot Token ကို ဤနေရာတွင် ထည့်ပါ
+TOKEN = "8443357375:AAF5AvWe_RHVjU-K4S7K6mGklPHLHoGrpBU"
+bot = telebot.TeleBot(TOKEN)
+
     
 # --- ၃။ Bot ကို စတင်နှိုးစက်ပေးတဲ့အပိုင်း ---
 if __name__ == "__main__":
@@ -248,5 +274,6 @@ async def search_cmd(client, message):
 
 if __name__ == "__main__":
     app.run()
+
 
 
