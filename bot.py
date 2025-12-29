@@ -71,8 +71,13 @@ def main_menu():
 # ဒါပေမဲ့ app.on_callback_query() နဲ့ app.on_message() အပိုင်းတွေကို ဒီကြားထဲမှာ ထည့်ပေးပါ။
 
 # --- ၆။ Bot Run အပိုင်း (အရေးကြီးသည်) ---
+# --- ၆။ Bot Run အပိုင်း ---
 if __name__ == "__main__":
-    init_db()      # DB အရင်ဆောက်မယ်
-    keep_alive()   # Web Server ကို နောက်ကွယ်မှာ Run မယ်
-    print("Bot is starting with Web Server...")
-    app.run()      # Pyrogram Bot ကို Run မယ်
+    init_db()      # Database ဆောက်မယ်
+    keep_alive()   # Flask Web Server ကို အရင်နှိုးမယ်
+    print("Web Server is up. Starting Pyrogram Bot...")
+    
+    try:
+        app.run()  # Pyrogram Bot ကို စတင် Polling လုပ်ခိုင်းမယ်
+    except Exception as e:
+        print(f"Bot Error: {e}")
